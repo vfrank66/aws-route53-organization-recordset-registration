@@ -1,0 +1,13 @@
+templates:
+- 'cfn/**/*.yaml'
+ignore_templates:
+- 'cfn/**/*-transform.yaml'
+regions:
+- us-east-1
+- us-east-2
+ignore_checks:
+- W3010
+- E3001
+configure_rules:
+  E3012:
+    strict: False 

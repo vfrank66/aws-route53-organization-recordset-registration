@@ -1,0 +1,81 @@
+{
+  "version": "0",
+  "id": "123456AA-aoeu-aoeu-aoeu-123456789aoe",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.route53",
+  "account": "1234567890",
+  "time": "2022-11-04T15:05:12Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.08",
+    "userIdentity": {
+      "type": "AssumedRole",
+      "principalId": "ABCEDIF:TestDeployRole",
+      "arn": "arn:aws:sts::1234567890:assumed-role/TESTDEPLOYROLE/TestDeployRole",
+      "accountId": "1234567890",
+      "accessKeyId": "123456789eoau",
+      "sessionContext": {
+        "sessionIssuer": {
+          "type": "Role",
+          "principalId": "ABCEDIF",
+          "arn": "arn:aws:iam::1234567890:role/TESTDEPLOYROLE",
+          "accountId": "1234567890",
+          "userName": "TESTDEPLOYROLE"
+        },
+        "webIdFederationData": {},
+        "attributes": {
+          "creationDate": "2022-11-04T15:01:43Z",
+          "mfaAuthenticated": "false"
+        }
+      },
+      "invokedBy": "cloudformation.amazonaws.com"
+    },
+    "eventTime": "2022-11-04T15:05:12Z",
+    "eventSource": "route53.amazonaws.com",
+    "eventName": "ChangeResourceRecordSets",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "cloudformation.amazonaws.com",
+    "userAgent": "cloudformation.amazonaws.com",
+    "requestParameters": {
+      "hostedZoneId": "TestHostedZoneId",
+      "changeBatch": {
+        "changes": [
+          {
+            "action": "CREATE",
+            "resourceRecordSet": {
+              "name": "test.api.test.io.",
+              "type": "A",
+              "setIdentifier": "alb-us-east-1",
+              "region": "us-east-1",
+              "aliasTarget": {
+                "hostedZoneId": "TESTHOSTEDZONE",
+                "dNSName": "internal-api.us-east-1.elb.amazonaws.com",
+                "evaluateTargetHealth": true
+              },
+              "healthCheckId": "355a469b-c048-4086-9b48-123456798"
+            }
+          }
+        ]
+      }
+    },
+    "responseElements": {
+      "changeInfo": {
+        "id": "/change/C05233482TEYCN21PSPZM",
+        "status": "PENDING",
+        "submittedAt": "Nov 4, 2022 3:05:12 PM"
+      }
+    },
+    "additionalEventData": {
+      "Note": "Do not use to reconstruct hosted zone"
+    },
+    "requestID": "88ad2b56-b12d-4930-b807-e5633a2ace8d",
+    "eventID": "6d897528-841c-442f-8eb7-ee9ac675b32f",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "apiVersion": "2013-04-01",
+    "managementEvent": true,
+    "recipientAccountId": "1234567890",
+    "eventCategory": "Management"
+  }
+}

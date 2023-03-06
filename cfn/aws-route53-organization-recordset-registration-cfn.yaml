@@ -1,0 +1,180 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: This is the lambda function that is triggered by AWS Route53 recordsets and upserts to the organizations management accounts Route53 recordsets to make private apis available within a companies domain.
+
+Parameters:
+  Environment:
+    Type: String
+    Description: Environment; sand, dev, stg, prod
+    AllowedValues:
+      - sand
+      - dev
+      - stg
+      - prod
+    MinLength: "0"
+  ProjectName:
+    Type: String
+    Description: Name of this Lambda
+    Default: "aws-route53-organization-recordset-registration"
+  IamRoleArn:
+    Type: String
+    Description: ARN representing the IAM role with cross account access inside the Maestro Gateway
+  DomainHostedZoneId:
+    Type: String
+    Description: The default hosted zone id to default to if not present on the recordset entry, although it should be.
+  CompanyDomainFilter:
+    Type: String
+    Description: A filter to include only these domain route53 recordset changes. ie api.business.io
+  AlarnTargetArn:
+    Type: String
+    Description: The error Alarm target arn used to trigger on-page calls
+    Default: ""
+
+Conditions:
+  IsAlarmTarget: !Not [!Equals [!Ref "AlarnTargetArn", ""]]
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonKinesisFullAccess
+      Policies:
+        - PolicyName: AllowAssumeRole
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "sts:AssumeRole"
+                Resource: "*"
+              - Effect: Allow
+                Action: 
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: 
+                  - "arn:aws:logs:*:*:*"
+        - PolicyName: "route53-upsert-recordset"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "route53:CreateHostedZone"
+                  - "route53:UpdateHostedZoneComment"
+                  - "route53:GetHostedZone"
+                  - "route53:ListHostedZones"
+                  - "route53:DeleteHostedZone"
+                  - "route53:ChangeResourceRecordSets"
+                  - "route53:ListResourceRecordSets"
+                  - "route53:GetHostedZoneCount"
+                  - "route53:ListHostedZonesByName"
+                Resource:
+                  - "*"
+
+  
+  Lambda:
+    Type: AWS::Serverless::Function
+    DependsOn: LogGroup
+    Properties:
+      FunctionName: !Sub "${ProjectName}-${Environment}"
+      Handler: handler.lambda_handler
+      Runtime: python3.9
+      MemorySize: 256
+      Timeout: 900
+      CodeUri: aws-route53-organization-recordset-registration.zip
+      Role: !GetAtt LambdaRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Sub "${Environment}"
+          ASSUME_ROLE_ARN: !Sub "${IamRoleArn}"
+          DEST_HOSTED_ZONE_ID: !Ref DomainHostedZoneId
+          COMPANY_DOMAIN_FILTER: !Ref CompanyDomainFilter
+      Events:
+        RouteChange:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source:
+                - "aws.route53"
+              detail-type:
+                - "AWS API Call via CloudTrail"
+              detail:
+                eventSource:
+                  - "route53.amazonaws.com"
+                eventName:
+                  - "ChangeResourceRecordSets"
+
+  # Metrics Resources
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: !Sub "/aws/lambda/${ProjectName}-${Environment}"
+  
+  MetricFilter: 
+    Condition: IsAlarmTarget
+    Type: AWS::Logs::MetricFilter
+    Properties: 
+      LogGroupName: !Ref LogGroup
+      FilterPattern: !Sub '"Lambda ERROR ${ProjectName}"'
+      MetricTransformations: 
+        - 
+          MetricValue: "1"
+          MetricNamespace: "Lambda/ExecutionFailures"
+          MetricName: !Sub '${ProjectName}-failures-${Environment}'
+
+  CloudWatchAlarm:
+    Condition: IsAlarmTarget
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      EvaluationPeriods: 1
+      Statistic: Sum
+      Threshold: 0
+      Period: 300
+      AlarmActions:
+        - !Ref AlarnTargetArn
+      AlarmName: !Sub '${ProjectName}-${Environment}'
+      AlarmDescription: !Sub '${ProjectName} alarm for Lambda execution failures on ${Environment}.'
+      Namespace: Lambda/ExecutionFailures
+      ComparisonOperator: GreaterThanThreshold
+      MetricName: !Sub '${ProjectName}-failures-${Environment}'
+
+  OutOfMemoryFilter: 
+    Condition: IsAlarmTarget
+    Type: AWS::Logs::MetricFilter
+    Properties: 
+      LogGroupName: !Ref LogGroup
+      FilterPattern: 'Runtime exited with error'
+      MetricTransformations: 
+        - 
+          MetricValue: "1"
+          MetricNamespace: "Lambda/ExecutionFailures"
+          MetricName: !Sub '${ProjectName}-out-of-memory-${Environment}'
+
+  OutOfMemoryAlarm:
+    Conditian: IsAlarmTarget
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      EvaluationPeriods: 1
+      Statistic: Sum
+      Threshold: 0
+      Period: 300
+      AlarmActions:
+        - !Ref AlarnTargetArn
+      AlarmName: !Sub '${ProjectName}-out-of-memory-${Environment}'
+      AlarmDescription: !Sub '${ProjectName} alarm for out of memory failure on ${Environment}.'
+      Namespace: Lambda/ExecutionFailures
+      ComparisonOperator: GreaterThanThreshold
+      MetricName: !Sub '${ProjectName}-out-of-memory-${Environment}'

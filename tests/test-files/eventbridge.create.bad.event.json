@@ -1,0 +1,90 @@
+{
+  "version": "0",
+  "id": "123456AA-aoeu-aoeu-aoeu-123456789aoe",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.route53",
+  "account": "1234567890",
+  "time": "2023-01-11T14:05:10Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.08",
+    "userIdentity": {
+      "type": "AssumedRole",
+      "principalId": "AROA5B4VBDBXRLXI3L6JO:test@company.com",
+      "arn": "arn:aws:sts::1234567890:assumed-role/TESTROLENAME/test@company.com",
+      "accountId": "1234567890",
+      "accessKeyId": "ASIA5B4VBDBXQN4XQ5QE",
+      "sessionContext": {
+        "sessionIssuer": {
+          "type": "Role",
+          "principalId": "AROA5B4VBDBXRLXI3L6JO",
+          "arn": "arn:aws:iam::1234567890:role/aws-reserved/sso.amazonaws.com/TESTROLENAME",
+          "accountId": "1234567890",
+          "userName": "TESTROLENAME"
+        },
+        "webIdFederationData": {},
+        "attributes": {
+          "creationDate": "2023-01-11T14:03:54Z",
+          "mfaAuthenticated": "false"
+        }
+      }
+    },
+    "eventTime": "2023-01-11T14:05:10Z",
+    "eventSource": "route53.amazonaws.com",
+    "eventName": "ChangeResourceRecordSets",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "168.149.139.63",
+    "userAgent": "AWS Internal",
+    "requestParameters": {
+      "hostedZoneId": "Z03303012NHBX3UTSBMXM",
+      "changeBatch": {
+        "changes": [
+          {
+            "action": "DELETE",
+            "resourceRecordSet": {
+              "name": "test.api.test.io.",
+              "type": "A",
+              "aliasTarget": {
+                "hostedZoneId": "Z2FDTNDATAQYW2",
+                "dNSName": "d1amngbe3bivjn.cloudfront.net.",
+                "evaluateTargetHealth": false
+              }
+            }
+          },
+          {
+            "action": "CREATE",
+            "resourceRecordSet": {
+              "name": "test.api.test.io",
+              "type": "A",
+              "aliasTarget": {
+                "hostedZoneId": "Z26RNL4JYFTOTI",
+                "dNSName": "IXS01-GLUE-LAMBDA-ec33be86c47527c9.elb.us-east-1.amazonaws.com",
+                "evaluateTargetHealth": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    "responseElements": {
+      "changeInfo": {
+        "id": "/change/C04765903KWIW0EQ3SDU7",
+        "status": "PENDING",
+        "submittedAt": "Jan 11, 2023 2:05:10 PM"
+      }
+    },
+    "additionalEventData": {
+      "Note": "Do not use to reconstruct hosted zone"
+    },
+    "requestID": "b20a75c3-cdf4-46c6-bceb-c930d71912e0",
+    "eventID": "73026fd5-b033-4174-9e60-2f0cfb9d0d2e",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "apiVersion": "2013-04-01",
+    "managementEvent": true,
+    "recipientAccountId": "1234567890",
+    "eventCategory": "Management",
+    "sessionCredentialFromConsole": "true"
+  }
+}

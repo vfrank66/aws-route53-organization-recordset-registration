@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "Environment",
+        "ParameterValue": "stg"
+    },
+    {
+        "ParameterKey": "IamRoleArn",
+        "ParameterValue": "<insert role with permissions to both aws account route53 recordsets>"
+    },
+    {
+        "ParameterKey": "AlarnTargetArn",
+        "ParameterValue": ""
+    }
+]

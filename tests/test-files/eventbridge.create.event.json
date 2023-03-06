@@ -1,0 +1,78 @@
+{
+  "version": "0",
+  "id": "123456AA-aoeu-aoeu-aoeu-123456789aoe",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.route53",
+  "account": "1234567890",
+  "time": "2022-10-31T18:04:08Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.08",
+    "userIdentity": {
+      "type": "AssumedRole",
+      "principalId": "ABCDEFG:test@company.com",
+      "arn": "arn:aws:sts::1234567890:assumed-role/TESTROLE/test@company.com",
+      "accountId": "1234567890",
+      "accessKeyId": "ABC",
+      "sessionContext": {
+        "sessionIssuer": {
+          "type": "Role",
+          "principalId": "ABCDEFG",
+          "arn": "arn:aws:iam::1234567890:role/aws-reserved/sso.amazonaws.com/TESTROLE",
+          "accountId": "1234567890",
+          "userName": "TESTROLE"
+        },
+        "webIdFederationData": {},
+        "attributes": {
+          "creationDate": "2022-10-31T17:55:14Z",
+          "mfaAuthenticated": "false"
+        }
+      },
+      "invokedBy": "cloudformation.amazonaws.com"
+    },
+    "eventTime": "2022-10-31T18:04:08Z",
+    "eventSource": "route53.amazonaws.com",
+    "eventName": "ChangeResourceRecordSets",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "cloudformation.amazonaws.com",
+    "userAgent": "cloudformation.amazonaws.com",
+    "requestParameters": {
+      "hostedZoneId": "TESTHOZEDZONE",
+      "changeBatch": {
+        "changes": [
+          {
+            "action": "CREATE",
+            "resourceRecordSet": {
+              "name": "test.api.test.io.",
+              "type": "A",
+              "aliasTarget": {
+                "hostedZoneId": "TESTHOSTEDZONE",
+                "dNSName": "internal-event-compaction-nlb.us-east-1.elb.amazonaws.com",
+                "evaluateTargetHealth": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    "responseElements": {
+      "changeInfo": {
+        "id": "/change/C02153862D3AFQET4PN4V",
+        "status": "PENDING",
+        "submittedAt": "Oct 31, 2022 6:04:08 PM"
+      }
+    },
+    "additionalEventData": {
+      "Note": "Do not use to reconstruct hosted zone"
+    },
+    "requestID": "8a4330c9-b103-4823-89ae-e7db5d34ee56",
+    "eventID": "1d12fe0c-6990-41e9-9b42-911f15cea640",
+    "readOnly": false,
+    "eventType": "AwsApiCall",
+    "apiVersion": "2013-04-01",
+    "managementEvent": true,
+    "recipientAccountId": "1234567890",
+    "eventCategory": "Management"
+  }
+}
