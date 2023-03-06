@@ -164,7 +164,7 @@ Resources:
           MetricName: !Sub '${ProjectName}-out-of-memory-${Environment}'
 
   OutOfMemoryAlarm:
-    Conditian: IsAlarmTarget
+    Condition: IsAlarmTarget
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
       EvaluationPeriods: 1
